@@ -1,0 +1,7 @@
+{
+  "name": "Nutqi - Speech Diagnosis AI",
+  "description": "An Arabic speech therapy application that uses AI to diagnose articulation disorders in children for specific phonemes.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
