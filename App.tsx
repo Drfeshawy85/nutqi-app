@@ -49,25 +49,45 @@ const Logo: React.FC<{ size?: 'sm' | 'lg' }> = ({ size = 'sm' }) => (
   </div>
 );
 
-const Header: React.FC<{ points: number; soundEnabled: boolean; onToggleSound: () => void }> = ({ points, soundEnabled, onToggleSound }) => (
+const Header: React.FC<{ 
+  points: number; 
+  soundEnabled: boolean; 
+  onToggleSound: () => void;
+  onLogout: () => void;
+}> = ({ points, soundEnabled, onToggleSound, onLogout }) => (
   <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm py-3 px-6 mb-6 border-b border-green-50">
     <div className="max-w-5xl mx-auto flex justify-between items-center">
-      <Logo />
       <div className="flex items-center gap-4">
-        <button 
-          onClick={onToggleSound}
-          className={`p-2 rounded-xl transition-all ${soundEnabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-400'}`}
-          title={soundEnabled ? 'إيقاف الصوت' : 'تشغيل الصوت'}
-        >
-          {soundEnabled ? (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
-          ) : (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
-          )}
-        </button>
-        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 px-4 py-1.5 rounded-2xl flex items-center gap-2 border border-yellow-200 shadow-sm">
+        <Logo />
+      </div>
+      <div className="flex items-center gap-3 sm:gap-6">
+        <div className="hidden sm:flex bg-gradient-to-r from-yellow-50 to-orange-50 px-4 py-1.5 rounded-2xl items-center gap-2 border border-yellow-200 shadow-sm">
           <span className="text-xl animate-bounce">⭐</span>
           <span className="font-bold text-yellow-700">{points} نقطة</span>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={onToggleSound}
+            className={`p-2.5 rounded-xl transition-all shadow-sm border ${soundEnabled ? 'bg-green-50 text-green-600 border-green-100' : 'bg-slate-100 text-slate-400 border-slate-200'}`}
+            title={soundEnabled ? 'إيقاف الصوت' : 'تشغيل الصوت'}
+          >
+            {soundEnabled ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
+            )}
+          </button>
+          
+          <button 
+            onClick={onLogout}
+            className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-xl text-sm font-bold border border-red-100 hover:bg-red-100 transition-all shadow-sm"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span className="hidden sm:inline">تسجيل خروج</span>
+          </button>
         </div>
       </div>
     </div>
@@ -131,32 +151,22 @@ const LoginScreen: React.FC<{ onLogin: (name: string, code: string) => void }> =
 
 const SoundSelection: React.FC<{ 
   onSelect: (sound: SoundData) => void;
-  onLogout: () => void;
   hasResults: boolean;
   onViewReport: () => void;
   soundEnabled: boolean;
-}> = ({ onSelect, onLogout, hasResults, onViewReport, soundEnabled }) => {
+}> = ({ onSelect, hasResults, onViewReport, soundEnabled }) => {
   return (
     <div className="max-w-5xl mx-auto px-6">
-      <div className="flex justify-between items-center mb-10">
-        <button 
-          onClick={() => {
-            playAudio(SOUNDS.CLICK, soundEnabled);
-            onLogout();
-          }}
-          className="text-red-400 hover:text-red-600 text-sm font-bold bg-white/60 backdrop-blur px-5 py-2.5 rounded-2xl shadow-sm border border-red-50 transition-all hover:bg-red-50"
-        >
-          تسجيل خروج
-        </button>
+      <div className="flex justify-end mb-10">
         {hasResults && (
           <button 
             onClick={() => {
               playAudio(SOUNDS.CLICK, soundEnabled);
               onViewReport();
             }}
-            className="bg-indigo-600 text-white px-6 py-2.5 rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-indigo-100 shadow-xl hover:-translate-y-0.5"
+            className="bg-indigo-600 text-white px-8 py-3 rounded-2xl text-base font-bold hover:bg-indigo-700 transition-all shadow-indigo-100 shadow-xl hover:-translate-y-0.5"
           >
-            📊 تقرير الإنجاز الحالي
+            📊 عرض التقرير الحالي
           </button>
         )}
       </div>
@@ -245,7 +255,7 @@ const DiagnosisSession: React.FC<{
       setIsRecording(true);
     } catch (err) {
       console.error("Recording error:", err);
-      alert("يرجى السماح بالوصول للميكروفون لبدري التسجيل");
+      alert("يرجى السماح بالوصول للميكروفون لبدء التسجيل");
     }
   };
 
@@ -408,8 +418,9 @@ const ReportView: React.FC<{
   session: StudentSession;
   onRestart: () => void;
   onClearResults: () => void;
+  onLogout: () => void;
   soundEnabled: boolean;
-}> = ({ session, onRestart, onClearResults, soundEnabled }) => {
+}> = ({ session, onRestart, onClearResults, onLogout, soundEnabled }) => {
   const correctCount = session.results.filter(r => r.isCorrect).length;
   const incorrectCount = session.results.length - correctCount;
   const accuracy = Math.round((correctCount / session.results.length) * 100) || 0;
@@ -497,10 +508,10 @@ const ReportView: React.FC<{
             🏠 العودة للأصوات
           </button>
           <button 
-            onClick={() => { playAudio(SOUNDS.CLICK, soundEnabled); onClearResults(); }}
+            onClick={() => { playAudio(SOUNDS.CLICK, soundEnabled); onLogout(); }}
             className="bg-red-50 text-red-600 py-6 rounded-[1.5rem] font-black text-xl hover:bg-red-100 transition-all border-2 border-red-100 shadow-sm"
           >
-            🧹 مسح الرحلة والبدء مجدداً
+            🚪 تسجيل خروج نهائي
           </button>
         </div>
       </div>
@@ -575,13 +586,14 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    if (confirm('هل أنت متأكد من تسجيل الخروج؟ سيتم مسح بياناتك الحالية.')) {
+    if (confirm('هل أنت متأكد من تسجيل الخروج؟ سيتم مسح بياناتك والعودة لشاشة الدخول.')) {
       setStudent(null);
       setResults([]);
       setPoints(0);
       setSelectedSound(null);
       setCurrentView(View.Login);
       localStorage.clear();
+      playAudio(SOUNDS.CLICK, soundEnabled);
     }
   };
 
@@ -646,7 +658,8 @@ export default function App() {
         <Header 
           points={points} 
           soundEnabled={soundEnabled} 
-          onToggleSound={toggleSound} 
+          onToggleSound={toggleSound}
+          onLogout={handleLogout}
         />
       )}
 
@@ -661,7 +674,6 @@ export default function App() {
             </div>
             <SoundSelection 
               onSelect={handleSoundSelect} 
-              onLogout={handleLogout}
               hasResults={results.length > 0}
               onViewReport={() => setCurrentView(View.Report)}
               soundEnabled={soundEnabled}
@@ -685,6 +697,7 @@ export default function App() {
             session={{ ...student, results, totalPoints: points }} 
             onRestart={handleRestart}
             onClearResults={handleClearResults}
+            onLogout={handleLogout}
             soundEnabled={soundEnabled}
           />
         )}
