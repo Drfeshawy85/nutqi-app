@@ -22,8 +22,9 @@ export interface DiagnosisResult {
   position: SoundPosition;
   isCorrect: boolean;
   transcribed: string;
-  errorType: 'substitution' | 'omission' | 'distortion' | 'none';
+  errorType: 'substitution' | 'omission' | 'none';
   substitutionDetails?: string;
+  omissionDetails?: string;
   comment?: string;
   pointsEarned: number;
 }

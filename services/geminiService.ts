@@ -21,18 +21,33 @@ export async function analyzeSpeech(
           },
           {
             text: `
-              Analyze the pronunciation of the Arabic word "${target.word}" in the provided audio.
-              The targeted phoneme is "${target.phoneme}" which is located at the ${target.position} of the word.
+              You are an expert AI Speech-Language Pathologist (SLP) specializing in Arabic phonetics and articulation disorders in children.
+              Analyze the pronunciation of the child for the target word: "${target.word}"
+              specifically focusing on the target phoneme: "${target.phoneme}" at the position: "${target.position}".
 
-              Diagnostic Rules:
-              1. **Correct**: The word and the target phoneme are pronounced clearly and correctly.
-              2. **Substitution (إبدال)**: The child replaces the target phoneme with another sound. 
-                 Example: Saying "تلب" (Talb) instead of "كلب" (Kalb) -> Substitution of /ك/ with /ت/.
-              3. **Omission (حذف)**: The child omits the phoneme or an entire syllable containing it.
-                 Example: Saying "مان" (Man) instead of "رمان" (Ruman) -> Omission of the first syllable/phoneme /ر/.
-              4. **Distortion (تشويه)**: The sound is produced in a non-standard way but is not a clear substitution.
+              ARABIC PHONETIC EXPERTISE (CRITICAL):
+              - /ع/ (Ayn): Pharyngeal voiced sound. It is NOT /أ/ (Hamza). Children often substitute it with /أ/ or omit it entirely.
+              - /ح/ (Haa): Pharyngeal voiceless fricative. It is NOT /هـ/ (Haa). Children often substitute it with /هـ/ or /خ/.
+              - /خ/ (Khaa): Velar/Post-velar voiceless fricative.
+              - /غ/ (Ghayn): Velar/Post-velar voiced fricative.
+              - /ص/ (Sad): Emphatic /s/. Children often de-emphasize it into /س/.
+              - /ق/ (Qaf): Uvular stop. Often replaced with /ك/ or /أ/.
+              - /ر/ (Ra): Alveolar tap/trill. Often replaced with /ل/ or /و/.
 
-              Please transcribe what you heard and determine if it's correct. If incorrect, specify the error type and details in Arabic.
+              DIAGNOSTIC GUIDELINES:
+              1. If you hear the correct target sound for the phoneme "${target.phoneme}", set isCorrect = true and errorType = "none".
+              2. If the sound is replaced by another (e.g., /ع/ became /أ/), set isCorrect = false and errorType = "substitution". 
+                 Provide details in Arabic: "أبدلت حرف الـ... بحرف الـ...".
+              3. If the sound is missing or the syllable is skipped, set isCorrect = false and errorType = "omission".
+                 Provide details in Arabic: "حذفت حرف الـ...".
+
+              RESPONSE FORMAT (JSON):
+              - isCorrect: boolean
+              - transcribed: Arabic script transcription of what the child said.
+              - errorType: "substitution" | "omission" | "none"
+              - substitutionDetails: (Arabic) explanation if substitution occurred.
+              - omissionDetails: (Arabic) explanation if omission occurred.
+              - comment: A very short encouraging Arabic sentence for the child.
             `,
           },
         ],
@@ -46,41 +61,39 @@ export async function analyzeSpeech(
             transcribed: { type: Type.STRING },
             errorType: { 
               type: Type.STRING, 
-              enum: ['substitution', 'omission', 'distortion', 'none'] 
+              enum: ['substitution', 'omission', 'none']
             },
-            substitutionDetails: { 
-              type: Type.STRING,
-              description: "Detailed description of the error in Arabic. Example: 'حذف المقطع الأول من الكلمة' or 'إبدال صوت الكاف بالتاء'."
-            },
+            substitutionDetails: { type: Type.STRING },
+            omissionDetails: { type: Type.STRING },
             comment: { type: Type.STRING },
           },
-          required: ['isCorrect', 'transcribed', 'errorType'],
+          required: ['isCorrect', 'transcribed', 'errorType', 'comment'],
         },
       },
     });
 
-    const result = JSON.parse(response.text);
-    // Added pointsEarned: 0 to satisfy DiagnosisResult type; App.tsx overrides this with actual points.
+    const text = response.text || "{}";
+    const result = JSON.parse(text);
+    
     return {
       wordId: target.id,
       word: target.word,
       phoneme: target.phoneme,
       position: target.position,
-      pointsEarned: 0,
+      pointsEarned: 0, 
       ...result,
     };
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
-    // Added pointsEarned: 0 to fix the missing property error in DiagnosisResult.
     return {
       wordId: target.id,
       word: target.word,
       phoneme: target.phoneme,
       position: target.position,
       isCorrect: false,
-      transcribed: "خطأ في المعالجة",
+      transcribed: "خطأ في الاتصال",
       errorType: "none",
-      comment: "تعذر الاتصال بالذكاء الاصطناعي حالياً",
+      comment: "نواجه مشكلة بسيطة، حاول مرة أخرى يا بطل!",
       pointsEarned: 0,
     };
   }
